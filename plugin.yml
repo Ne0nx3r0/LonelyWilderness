@@ -1,6 +1,6 @@
 name: LonelyWilderness
 main: com.ne0nx3r0.lonely.LonelyWilderness
-version: '0.1a'
+version: '1.0b'
 database: false
 description: Lonely /wild command
 commands:
