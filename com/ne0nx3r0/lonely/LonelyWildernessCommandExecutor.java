@@ -18,7 +18,7 @@ class LonelyWildernessCommandExecutor implements CommandExecutor {
         this.plugin = plugin;
     }
     
-    long COOLDOWN;
+    long COOLDOWN = 0;
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmnd, String label, String[] args) {
@@ -30,10 +30,10 @@ class LonelyWildernessCommandExecutor implements CommandExecutor {
         
         long now = System.currentTimeMillis();
         
-        if(this.COOLDOWN < now) {
+        if(this.COOLDOWN > now) {
             cs.sendMessage(ChatColor.RED+"/wild has a global cooldown for all users");
             
-            int seconds = (int) ((now - this.COOLDOWN) / 1000);
+            int seconds = (int) ((this.COOLDOWN - now) / 1000);
             
             cs.sendMessage(ChatColor.RED+"You can try again in "+seconds+" seconds.");
         
