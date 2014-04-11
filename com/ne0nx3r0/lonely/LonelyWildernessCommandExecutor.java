@@ -5,7 +5,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -54,10 +53,9 @@ class LonelyWildernessCommandExecutor implements CommandExecutor {
             return true;
         }
         
-        int minDistance = 150;
-        int maxDistance = 750;
+        int maxDistance = 3000;
         
-        player.teleport(this.getRandomLocation(player, minDistance, maxDistance));
+        player.teleport(this.getRandomLocation(player, maxDistance));
         
         cs.sendMessage(ChatColor.GREEN+"Sending you to a random location in the world!");
         
@@ -66,31 +64,30 @@ class LonelyWildernessCommandExecutor implements CommandExecutor {
         return true;
     }
     
-    public Location getRandomLocation(Player player, int minDistance,int maxDistance) {
+    public Location getRandomLocation(Player player, int maxDistance) {
         Random random = new Random();
         
         Location lSeed = player.getLocation();
         
-        Block bSendPlayerTo = lSeed.add(
-            random.nextInt((maxDistance-minDistance)*2)-minDistance-maxDistance, 
-            255, 
-            random.nextInt((maxDistance-minDistance)*2)-minDistance-maxDistance
-        ).getBlock();
-
-        while(bSendPlayerTo.getType().equals(Material.AIR) || bSendPlayerTo.getType().equals(Material.WATER)) {
-            if(bSendPlayerTo.getY() == 1 || bSendPlayerTo.getType().equals(Material.WATER)) {
-                // reached the bottom or water, grab a new random location
-                bSendPlayerTo = lSeed.add(
-                    random.nextInt((maxDistance-minDistance)*2)-minDistance-maxDistance, 
-                    255, 
-                    random.nextInt((maxDistance-minDistance)*2)-minDistance-maxDistance
-                ).getBlock();
-            }
-            else {
-                bSendPlayerTo = bSendPlayerTo.getRelative(BlockFace.DOWN);
-            }
-        }
+        int seedX = lSeed.getBlockX();
+        int seedZ = lSeed.getBlockZ();
         
-        return bSendPlayerTo.getLocation().add(0,2,0);
+        int randomX;
+        int randomZ;
+        
+        Block bSendPlayerTo;
+        
+        do{
+            randomX = seedX + maxDistance - random.nextInt(maxDistance*2);
+            randomZ = seedZ + maxDistance - random.nextInt(maxDistance*2);
+            
+            //preload chunk
+            lSeed.getWorld().getChunkAt(randomX/16, randomZ/16).load();
+            
+            bSendPlayerTo = lSeed.getWorld().getHighestBlockAt(randomX, randomZ);
+        }
+        while(bSendPlayerTo.getType().equals(Material.WATER) || bSendPlayerTo.getType().equals(Material.AIR));
+ 
+        return bSendPlayerTo.getLocation();
     }
 }
