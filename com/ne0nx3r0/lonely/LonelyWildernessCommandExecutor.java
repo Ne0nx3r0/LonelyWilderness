@@ -17,7 +17,7 @@ class LonelyWildernessCommandExecutor implements CommandExecutor {
         this.plugin = plugin;
     }
     
-    long COOLDOWN = 0;
+    private long COOLDOWN = 0;
 
     @Override
     public boolean onCommand(CommandSender cs, Command cmnd, String label, String[] args) {
